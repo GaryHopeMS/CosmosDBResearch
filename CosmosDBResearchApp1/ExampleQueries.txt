@@ -1,0 +1,22 @@
+﻿SELECT o.AccountNumber, o.LineItems[0].ProductId, o.LineItems[0].OrderQty
+SELECT *
+     FROM Orders o 
+     WHERE  o.LineItems[0].ProductId = 1234 AND o.AccountNumber = "AC1" AND o.LineItems[0].OrderQty <> 7
+
+SELECT count(1) FROM Orders o WHERE  o.LineItems[0].ProductId = 1234 AND o.AccountNumber = "AX1"
+SELECT count(1) FROM Orders o WHERE  o.AccountNumber = "AX1"
+
+SELECT DISTINCT  o.AccountNumber FROM Orders o
+
+SELECT o.AccountNumber, i.ProductId FROM Orders o JOIN i IN o.LineItems WHERE o.AccountNumber = "AY1" AND i.ProductId = 1234
+
+SELECT count(1) FROM Orders o JOIN i IN o.LineItems WHERE o.AccountNumber = "AX1" AND i.ProductId = 1234
+
+SELECT count(1)
+FROM Orders o
+JOIN i IN o.Items
+WHERE o.AccountNumber = "1" AND i.ProductId = 1234
+
+SELECT count(1) FROM Orders o WHERE o.Items[0].ProductId = 1234 AND o.AccountNumber = "1"
+
+SELECT * FROM Orders o WHERE o.Items[0].ProductId = 1234 AND o.AccountNumber = @AccountNumber"
