@@ -8,16 +8,19 @@ namespace CosmosDBResearchApp1
 {
     partial class Program
     {
+        private const string queryString = "SELECT o.AccountNumber, o.id, o.OrderDate, i.ProductId, i.OrderQty, i.UnitPrice FROM Orders o JOIN i IN o.LineItems WHERE o.AccountNumber = @AccountNumber AND i.ProductId = @ProductId";
+        private const int productId = 1238;
+        private const string accountNumber = "AC1";
+
         private static async Task QueryContainer(Container container)
         {
             DateTime startTime = System.DateTime.Now;
             Console.WriteLine("Retrieving sales order details");
             var itemCounter = 0;
             var totalRUCost = 0.0;
-            string queryString = "SELECT o.AccountNumber, o.id, o.OrderDate, i.ProductId, i.OrderQty, i.UnitPrice FROM Orders o JOIN i IN o.LineItems WHERE o.AccountNumber = @AccountNumber AND i.ProductId = @ProductId";
             QueryDefinition queryDefinition = new QueryDefinition(queryString)
-                .WithParameter("@ProductId", 1238)
-                .WithParameter("@AccountNumber", "AC1");
+                .WithParameter("@ProductId", productId)
+                .WithParameter("@AccountNumber", accountNumber);
 
             QueryRequestOptions queryOptions = new QueryRequestOptions();
             // queryOptions.PartitionKey = new PartitionKey("AC1");
