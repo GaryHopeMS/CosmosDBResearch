@@ -41,10 +41,27 @@ namespace CosmosDBResearchApp1
             Database database = databaseResponse;
 
             ContainerProperties containerProperties = new ContainerProperties(containerName, containerPartitionKey);
-            Container container = await database.CreateContainerIfNotExistsAsync(
+            ContainerRequestOptions containerRequestOptions = new ContainerRequestOptions { PopulateQuotaInfo = true };
+            ContainerResponse containerResponse = await database.CreateContainerIfNotExistsAsync(
                 containerProperties: containerProperties,
-                throughputProperties: ThroughputProperties.CreateAutoscaleThroughput(autoscaleMaxThroughput: 4000)
+                throughputProperties: ThroughputProperties.CreateAutoscaleThroughput(autoscaleMaxThroughput: 4000),
+                containerRequestOptions
             );
+            Container container = containerResponse.Container;
+            
+            long indexTransformationProgress = long.Parse(containerResponse.Headers["x-ms-documentdb-collection-index-transformation-progress"]);
+            if (indexTransformationProgress==100)
+            {
+                Console.WriteLine($" Index policy up to date");
+            }
+            else
+            {
+                Console.WriteLine($" Indexing in progress");
+                Console.WriteLine($" Index status {indexTransformationProgress}");
+                Console.WriteLine("Press Enter to run query");
+            }
+   
+            string input = Console.ReadLine();
 
             // await InsertSalesOrders(container, 1000000);
             await QueryContainer(container);

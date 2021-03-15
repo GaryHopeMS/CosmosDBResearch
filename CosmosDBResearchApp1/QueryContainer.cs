@@ -14,16 +14,18 @@ namespace CosmosDBResearchApp1
 
         private static async Task QueryContainer(Container container)
         {
-            DateTime startTime = System.DateTime.Now;
-            Console.WriteLine("Retrieving sales order details");
+            var timeCounter = 0;
             var itemCounter = 0;
             var totalRUCost = 0.0;
+
+            Console.WriteLine("Retrieving sales order details");
+          
             QueryDefinition queryDefinition = new QueryDefinition(queryString)
                 .WithParameter("@ProductId", productId)
                 .WithParameter("@AccountNumber", accountNumber);
 
             QueryRequestOptions queryOptions = new QueryRequestOptions();
-            // queryOptions.PartitionKey = new PartitionKey("AC1");
+            // --->  // queryOptions.PartitionKey = new PartitionKey(accountNumber);
             // --->  // queryOptions.MaxItemCount = 100000;
 
 
@@ -32,7 +34,9 @@ namespace CosmosDBResearchApp1
                 // ---> //  while (salesOrders.HasMoreResults)
                 while (salesOrders.HasMoreResults)
                 {
+                    DateTime startTime = System.DateTime.Now;
                     FeedResponse<SalesOrderResult> salesOrderResponse = await salesOrders.ReadNextAsync();
+                    timeCounter = timeCounter + System.DateTime.Now.Subtract(startTime).Milliseconds;
                     totalRUCost += salesOrderResponse.RequestCharge;
                     foreach (var salesOrder in salesOrderResponse)
                     {
@@ -45,10 +49,9 @@ namespace CosmosDBResearchApp1
                 }
             }
 
-            DateTime endTime = System.DateTime.Now;
-            Console.WriteLine($"Total sales order items retuned {itemCounter}");
-            Console.WriteLine($"Total Request Units (RU) consumed {totalRUCost} ");
-            Console.WriteLine($"Time take {endTime.Subtract(startTime).Milliseconds} ms");
+            Console.WriteLine($"Total sales order items retuned : {itemCounter} record");
+            Console.WriteLine($"Total Request Units consumed : {totalRUCost} RU");
+            Console.WriteLine($"Time taken : {timeCounter} ms");
         }
         
     }
