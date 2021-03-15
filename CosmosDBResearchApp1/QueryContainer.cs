@@ -8,8 +8,8 @@ namespace CosmosDBResearchApp1
 {
     partial class Program
     {
-        // ---> // private const string queryString = "SELECT o.AccountNumber, o.id, o.OrderDate, o.LineItems[0].ProductId,  o.LineItems[0].OrderQty,  o.LineItems[0].UnitPrice FROM Orders o";
-        // ---> // private const string queryString = "SELECT o.AccountNumber, o.id, o.OrderDate, i.ProductId, i.OrderQty, i.UnitPrice FROM Orders o JOIN i IN o.LineItems WHERE o.AccountNumber = @AccountNumber AND i.ProductId = @ProductId";
+        // ---> incorrect // private const string queryString = "SELECT o.AccountNumber, o.id, o.OrderDate, o.LineItems[0].ProductId,  o.LineItems[0].OrderQty,  o.LineItems[0].UnitPrice FROM Orders o";
+        // ---> correct // private const string queryString = "SELECT o.AccountNumber, o.id, o.OrderDate, i.ProductId, i.OrderQty, i.UnitPrice FROM Orders o JOIN i IN o.LineItems WHERE o.AccountNumber = @AccountNumber AND i.ProductId = @ProductId";
         private const string queryString = "SELECT o.AccountNumber, o.id, o.OrderDate, i.ProductId, i.OrderQty, i.UnitPrice FROM Orders o JOIN i IN o.LineItems WHERE o.AccountNumber = @AccountNumber AND i.ProductId = @ProductId";
         private const int productId = 1238;
         private const string accountNumber = "AC1";
@@ -27,14 +27,16 @@ namespace CosmosDBResearchApp1
                 .WithParameter("@AccountNumber", accountNumber);
 
             QueryRequestOptions queryOptions = new QueryRequestOptions();
-            // --->  // queryOptions.PartitionKey = new PartitionKey(accountNumber);
-            // --->  // queryOptions.MaxItemCount = 100000;
-
+            // ---> optional // queryOptions.PartitionKey = new PartitionKey(accountNumber);
+            // ---> optional // queryOptions.MaxItemCount = 100000;
+            // queryOptions.PartitionKey = new PartitionKey(accountNumber);
+            queryOptions.MaxItemCount = 100000;
 
             using (FeedIterator<SalesOrderResult> salesOrders = container.GetItemQueryIterator<SalesOrderResult>(queryDefinition, null, queryOptions))
             {
-                // ---> //  while (salesOrders.HasMoreResults)
-                while (salesOrders.HasMoreResults)
+                // ---> correct  //  while (salesOrders.HasMoreResults)
+               // ---> incorrect // 
+               while (salesOrders.HasMoreResults)
                 {
                     DateTime startTime = System.DateTime.Now;
                     FeedResponse<SalesOrderResult> salesOrderResponse = await salesOrders.ReadNextAsync();
